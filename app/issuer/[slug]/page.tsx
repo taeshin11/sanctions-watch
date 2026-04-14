@@ -49,15 +49,21 @@ export default async function IssuerPage(props: PageProps<"/issuer/[slug]">) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <Link href="/" className="text-sm text-gray-400 hover:text-white mb-6 inline-block">← All Sanctions</Link>
+      <Link href="/" className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-flex items-center gap-1">← All Sanctions</Link>
       <div className="flex items-center gap-3 mb-6">
         <IssuerBadge issuer={issuer} />
         <div>
-          <h1 className="text-3xl font-bold text-white">{issuer} Sanctions</h1>
-          <p className="text-gray-400 text-sm mt-1">{issuerRecords.length} records</p>
+          <h1 className="text-3xl font-bold text-slate-900">{issuer} Sanctions</h1>
+          <p className="text-slate-500 text-sm mt-1">{issuerRecords.length} records</p>
         </div>
       </div>
-      <SanctionsTable records={issuerRecords} />
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="font-bold text-slate-900">Sanctions Records</h2>
+          <span className="text-sm text-slate-500">{issuerRecords.length} records</span>
+        </div>
+        <SanctionsTable records={issuerRecords} />
+      </div>
     </div>
   );
 }

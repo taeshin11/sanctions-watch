@@ -22,9 +22,15 @@ export default async function TimelinePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-white mb-2">Sanctions Timeline</h1>
-      <p className="text-gray-400 mb-6">All {sorted.length} records, newest first</p>
-      <SanctionsTable records={sorted} />
+      <h1 className="text-3xl font-bold text-slate-900 mb-2">Sanctions Timeline</h1>
+      <p className="text-slate-500 mb-6">All {sorted.length} records, newest first</p>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="font-bold text-slate-900">Sanctions Records</h2>
+          <span className="text-sm text-slate-500">{sorted.length} records</span>
+        </div>
+        <SanctionsTable records={sorted} />
+      </div>
     </div>
   );
 }

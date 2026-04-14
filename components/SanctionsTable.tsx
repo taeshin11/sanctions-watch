@@ -20,6 +20,22 @@ type SanctionRecord = {
   source: string;
 };
 
+const TYPE_STYLE: Record<string, string> = {
+  "asset-freeze": "bg-violet-500/10 text-violet-700 ring-1 ring-inset ring-violet-500/20",
+  "travel-ban": "bg-orange-500/10 text-orange-700 ring-1 ring-inset ring-orange-500/20",
+  "trade-restriction": "bg-red-500/10 text-red-700 ring-1 ring-inset ring-red-500/20",
+  "arms-embargo": "bg-slate-500/10 text-slate-700 ring-1 ring-inset ring-slate-500/20",
+};
+
+function TypeBadge({ type }: { type: string }) {
+  const style = TYPE_STYLE[type] || "bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-200";
+  return (
+    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${style}`}>
+      {type}
+    </span>
+  );
+}
+
 export default function SanctionsTable({ records }: { records: SanctionRecord[] }) {
   const [search, setSearch] = useState("");
   const [issuerFilter, setIssuerFilter] = useState("");
@@ -47,77 +63,68 @@ export default function SanctionsTable({ records }: { records: SanctionRecord[] 
     });
   }, [records, search, issuerFilter, countryFilter, sectorFilter]);
 
+  const selectClass = "text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 bg-white text-slate-700";
+
   return (
     <div>
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-4">
+      {/* Filter bar */}
+      <div className="px-6 py-3 border-b border-slate-50 bg-slate-50/50 flex flex-wrap gap-3">
         <input
           type="text"
-          placeholder="Search entity, description..."
+          placeholder="Search entity..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-gray-800 border border-gray-600 rounded px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-blue-500 flex-1 min-w-[200px]"
+          className={`${selectClass} flex-1 min-w-[180px]`}
         />
-        <select
-          value={issuerFilter}
-          onChange={(e) => setIssuerFilter(e.target.value)}
-          className="bg-gray-800 border border-gray-600 rounded px-3 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-blue-500"
-        >
+        <select value={issuerFilter} onChange={(e) => setIssuerFilter(e.target.value)} className={selectClass}>
           <option value="">All Issuers</option>
           {issuers.map((i) => <option key={i} value={i}>{i}</option>)}
         </select>
-        <select
-          value={countryFilter}
-          onChange={(e) => setCountryFilter(e.target.value)}
-          className="bg-gray-800 border border-gray-600 rounded px-3 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-blue-500"
-        >
+        <select value={countryFilter} onChange={(e) => setCountryFilter(e.target.value)} className={selectClass}>
           <option value="">All Countries</option>
           {countries.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select
-          value={sectorFilter}
-          onChange={(e) => setSectorFilter(e.target.value)}
-          className="bg-gray-800 border border-gray-600 rounded px-3 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-blue-500"
-        >
+        <select value={sectorFilter} onChange={(e) => setSectorFilter(e.target.value)} className={selectClass}>
           <option value="">All Sectors</option>
           {sectors.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
       </div>
 
-      <p className="text-xs text-gray-400 mb-3">{filtered.length} results</p>
+      <div className="px-6 py-2 border-b border-slate-50">
+        <span className="text-xs text-slate-400">{filtered.length} records</span>
+      </div>
 
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-700 text-left text-gray-400 text-xs">
-              <th className="pb-2 pr-3 font-medium">Date</th>
-              <th className="pb-2 pr-3 font-medium">Issuer</th>
-              <th className="pb-2 pr-3 font-medium">Target</th>
-              <th className="pb-2 pr-3 font-medium">Entity</th>
-              <th className="pb-2 pr-3 font-medium">Sector</th>
-              <th className="pb-2 pr-3 font-medium">Type</th>
-              <th className="pb-2 font-medium">Description</th>
+          <thead className="bg-slate-50 border-b border-slate-100">
+            <tr>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Issuer</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Target</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Entity</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider hidden md:table-cell">Sector</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Type</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-50">
             {filtered.map((r) => (
-              <tr key={r.id} className="border-b border-gray-800 hover:bg-gray-900 transition-colors">
-                <td className="py-2.5 pr-3 text-gray-400 whitespace-nowrap">{r.date}</td>
-                <td className="py-2.5 pr-3"><IssuerBadge issuer={r.issuer} /></td>
-                <td className="py-2.5 pr-3 whitespace-nowrap">
-                  <Link href={`/country/${r.target_country}`} className="hover:text-blue-400 transition-colors">
-                    {r.target_country_flag} {r.target_country_label}
+              <tr key={r.id} className="hover:bg-violet-50/30 transition-colors">
+                <td className="px-4 py-3.5 text-slate-500 text-xs font-mono whitespace-nowrap">{r.date}</td>
+                <td className="px-4 py-3.5"><IssuerBadge issuer={r.issuer} /></td>
+                <td className="px-4 py-3.5 whitespace-nowrap">
+                  <Link href={`/country/${r.target_country}`} className="flex items-center gap-1.5 hover:text-violet-600 transition-colors">
+                    <span className="text-base">{r.target_country_flag}</span>
+                    <span className="font-medium text-slate-800">{r.target_country_label}</span>
                   </Link>
                 </td>
-                <td className="py-2.5 pr-3 text-white font-medium max-w-[150px] truncate">{r.entity}</td>
-                <td className="py-2.5 pr-3">
-                  <Link href={`/sector/${r.sector}`} className="text-gray-300 hover:text-blue-400 text-xs">
+                <td className="px-4 py-3.5 font-medium text-slate-900 max-w-[150px] truncate">{r.entity}</td>
+                <td className="px-4 py-3.5 text-slate-500 text-xs hidden md:table-cell">
+                  <Link href={`/sector/${r.sector}`} className="hover:text-violet-600 transition-colors">
                     {r.sector}
                   </Link>
                 </td>
-                <td className="py-2.5 pr-3 text-gray-300 text-xs whitespace-nowrap">{r.type}</td>
-                <td className="py-2.5 text-gray-400 text-xs max-w-[250px]">{r.description}</td>
+                <td className="px-4 py-3.5"><TypeBadge type={r.type} /></td>
               </tr>
             ))}
           </tbody>

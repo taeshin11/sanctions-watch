@@ -39,10 +39,16 @@ export default async function SectorPage(props: PageProps<"/sector/[slug]">) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <Link href="/" className="text-sm text-gray-400 hover:text-white mb-6 inline-block">← All Sanctions</Link>
-      <h1 className="text-3xl font-bold text-white mb-2 capitalize">{slug.replace(/-/g, " ")} Sector Sanctions</h1>
-      <p className="text-gray-400 text-sm mb-6">{sectorRecords.length} records</p>
-      <SanctionsTable records={sectorRecords} />
+      <Link href="/" className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-flex items-center gap-1">← All Sanctions</Link>
+      <h1 className="text-3xl font-bold text-slate-900 mb-2 capitalize">{slug.replace(/-/g, " ")} Sector Sanctions</h1>
+      <p className="text-slate-500 text-sm mb-6">{sectorRecords.length} records</p>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="font-bold text-slate-900">Sanctions Records</h2>
+          <span className="text-sm text-slate-500">{sectorRecords.length} records</span>
+        </div>
+        <SanctionsTable records={sectorRecords} />
+      </div>
     </div>
   );
 }
