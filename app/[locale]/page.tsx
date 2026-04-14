@@ -5,6 +5,7 @@ import Link from "next/link";
 import SanctionsTable from "@/components/SanctionsTable";
 import IssuerBadge from "@/components/IssuerBadge";
 import AdSidebar from "@/components/ads/AdSidebar";
+import { setRequestLocale } from 'next-intl/server'
 
 export const metadata: Metadata = {
   title: 'Sanctions Watch | Real-Time Conflict Intelligence',
@@ -33,7 +34,10 @@ async function getRecords(): Promise<SanctionRecord[]> {
   return JSON.parse(raw).records;
 }
 
-export default async function Home() {
+export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   const records = await getRecords();
 
   const byIssuer = records.reduce<Record<string, number>>((acc, r) => {
@@ -115,7 +119,7 @@ export default async function Home() {
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                 <h2 className="font-bold text-slate-900">Recent Sanctions</h2>
-                <Link href="/timeline" className="text-sm text-violet-600 font-semibold hover:text-violet-700">View all →</Link>
+                <Link href={`/${locale}/timeline`} className="text-sm text-violet-600 font-semibold hover:text-violet-700">View all →</Link>
               </div>
               <SanctionsTable records={recent} />
             </div>
@@ -126,7 +130,7 @@ export default async function Home() {
             <div className="mt-6 bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
               <h3 className="font-bold text-slate-900 mb-3 text-sm">By Country</h3>
               {topCountries.map(([slug, d]) => (
-                <Link key={slug} href={`/country/${slug}`}
+                <Link key={slug} href={`/${locale}/country/${slug}`}
                   className="flex items-center justify-between py-2 text-sm hover:text-violet-600 transition-colors border-b border-slate-50 last:border-0">
                   <span className="text-slate-700">{d.flag} {d.label}</span>
                   <span className="text-slate-400 text-xs bg-slate-50 px-2 py-0.5 rounded-full">{d.count}</span>
@@ -136,7 +140,7 @@ export default async function Home() {
             <div className="mt-4 bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
               <h3 className="font-bold text-slate-900 mb-3 text-sm">By Issuer</h3>
               {Object.entries(byIssuer).map(([issuer, count]) => (
-                <Link key={issuer} href={`/issuer/${issuer.toLowerCase().replace(/[^a-z0-9]/g, "-")}`}
+                <Link key={issuer} href={`/${locale}/issuer/${issuer.toLowerCase().replace(/[^a-z0-9]/g, "-")}`}
                   className="flex items-center justify-between py-2 hover:opacity-80 transition-opacity border-b border-slate-50 last:border-0">
                   <IssuerBadge issuer={issuer} />
                   <span className="text-slate-400 text-xs bg-slate-50 px-2 py-0.5 rounded-full">{count}</span>

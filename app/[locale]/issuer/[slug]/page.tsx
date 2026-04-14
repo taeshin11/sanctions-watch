@@ -5,6 +5,8 @@ import Link from "next/link";
 import SanctionsTable from "@/components/SanctionsTable";
 import IssuerBadge from "@/components/IssuerBadge";
 import type { Metadata } from "next";
+import { setRequestLocale } from 'next-intl/server'
+import { routing } from '@/i18n/routing'
 
 const ISSUER_MAP: Record<string, string> = {
   "us-ofac": "US-OFAC",
@@ -26,11 +28,13 @@ async function getRecords(): Promise<SanctionRecord[]> {
 }
 
 export async function generateStaticParams() {
-  return Object.keys(ISSUER_MAP).map((slug) => ({ slug }));
+  return routing.locales.flatMap(locale =>
+    Object.keys(ISSUER_MAP).map(slug => ({ locale, slug }))
+  );
 }
 
-export async function generateMetadata(props: PageProps<"/issuer/[slug]">): Promise<Metadata> {
-  const { slug } = await props.params;
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
   const issuer = ISSUER_MAP[slug];
   if (!issuer) return {};
   return {
@@ -39,8 +43,10 @@ export async function generateMetadata(props: PageProps<"/issuer/[slug]">): Prom
   };
 }
 
-export default async function IssuerPage(props: PageProps<"/issuer/[slug]">) {
-  const { slug } = await props.params;
+export default async function IssuerPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
+  const { locale, slug } = await params;
+  setRequestLocale(locale)
+
   const issuer = ISSUER_MAP[slug];
   if (!issuer) notFound();
 
@@ -49,7 +55,7 @@ export default async function IssuerPage(props: PageProps<"/issuer/[slug]">) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <Link href="/" className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-flex items-center gap-1">← All Sanctions</Link>
+      <Link href={`/${locale}`} className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-flex items-center gap-1">← All Sanctions</Link>
       <div className="flex items-center gap-3 mb-6">
         <IssuerBadge issuer={issuer} />
         <div>

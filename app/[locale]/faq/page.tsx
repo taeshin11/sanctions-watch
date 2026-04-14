@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { setRequestLocale } from 'next-intl/server'
 
 export const metadata: Metadata = {
   title: 'How to Use & FAQ',
@@ -7,7 +8,10 @@ export const metadata: Metadata = {
   keywords: 'sanctions tracker, economic sanctions, arms embargo, financial sanctions, sanctions database, OFAC, FAQ, how to use, guide',
 }
 
-export default function FaqPage() {
+export default async function FaqPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   const faqs = [
     { q: 'What is Sanctions Watch and who is it for?', a: 'Sanctions Watch is a free, publicly accessible platform that provides a comprehensive database of international sanctions, arms embargoes, and economic restrictions related to armed conflicts. Designed for journalists, researchers, policy analysts, students, and NGO workers. No registration or payment required.' },
     { q: 'Where does the data come from?', a: 'Data is sourced from ACLED, SIPRI, Uppsala Conflict Data Program, UN agencies, official government sources, and verified open-source intelligence. Primary sources are cited where available.' },
@@ -19,7 +23,7 @@ export default function FaqPage() {
     <main className="bg-slate-50 min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-12">
         <nav className="text-sm text-slate-500 mb-8">
-          <Link href="/" className="hover:text-slate-700">Home</Link>
+          <Link href={`/${locale}`} className="hover:text-slate-700">Home</Link>
           <span className="mx-2">/</span>
           <span>How to Use &amp; FAQ</span>
         </nav>

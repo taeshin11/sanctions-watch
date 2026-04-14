@@ -2,6 +2,7 @@ import { promises as fs } from "fs";
 import path from "path";
 import SanctionsTable from "@/components/SanctionsTable";
 import type { Metadata } from "next";
+import { setRequestLocale } from 'next-intl/server'
 
 export const metadata: Metadata = {
   title: "Sanctions Timeline 2026 — Sanctions Watch",
@@ -15,7 +16,10 @@ type SanctionRecord = {
   description: string; legal_basis: string; source: string;
 };
 
-export default async function TimelinePage() {
+export default async function TimelinePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   const raw = await fs.readFile(path.join(process.cwd(), "public/data/sanctions.json"), "utf-8");
   const records: SanctionRecord[] = JSON.parse(raw).records;
   const sorted = [...records].sort((a, b) => b.date.localeCompare(a.date));

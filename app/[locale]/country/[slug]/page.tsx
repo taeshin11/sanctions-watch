@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import SanctionsTable from "@/components/SanctionsTable";
 import type { Metadata } from "next";
+import { setRequestLocale } from 'next-intl/server'
+import { routing } from '@/i18n/routing'
 
 type SanctionRecord = {
   id: string; date: string; issuer: string;
@@ -20,11 +22,11 @@ async function getRecords(): Promise<SanctionRecord[]> {
 export async function generateStaticParams() {
   const records = await getRecords();
   const slugs = [...new Set(records.map((r) => r.target_country))];
-  return slugs.map((slug) => ({ slug }));
+  return routing.locales.flatMap(locale => slugs.map(slug => ({ locale, slug })));
 }
 
-export async function generateMetadata(props: PageProps<"/country/[slug]">): Promise<Metadata> {
-  const { slug } = await props.params;
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
   const records = await getRecords();
   const r = records.find((x) => x.target_country === slug);
   if (!r) return {};
@@ -34,8 +36,10 @@ export async function generateMetadata(props: PageProps<"/country/[slug]">): Pro
   };
 }
 
-export default async function CountryPage(props: PageProps<"/country/[slug]">) {
-  const { slug } = await props.params;
+export default async function CountryPage({ params }: { params: Promise<{ locale: string; slug: string }> }) {
+  const { locale, slug } = await params;
+  setRequestLocale(locale)
+
   const records = await getRecords();
   const countryRecords = records.filter((r) => r.target_country === slug);
   if (countryRecords.length === 0) notFound();
@@ -43,7 +47,7 @@ export default async function CountryPage(props: PageProps<"/country/[slug]">) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <Link href="/" className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-flex items-center gap-1">← All Sanctions</Link>
+      <Link href={`/${locale}`} className="text-sm text-violet-600 hover:text-violet-700 font-medium mb-6 inline-flex items-center gap-1">← All Sanctions</Link>
       <div className="flex items-center gap-3 mb-6">
         <span className="text-4xl">{first.target_country_flag}</span>
         <div>
