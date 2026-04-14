@@ -1,9 +1,16 @@
+import type { Metadata } from 'next'
 import { promises as fs } from "fs";
 import path from "path";
 import Link from "next/link";
 import SanctionsTable from "@/components/SanctionsTable";
 import IssuerBadge from "@/components/IssuerBadge";
 import AdSidebar from "@/components/ads/AdSidebar";
+
+export const metadata: Metadata = {
+  title: 'Sanctions Watch | Real-Time Conflict Intelligence',
+  description: 'Comprehensive database of international sanctions, arms embargoes, and economic restrictions related to armed conflicts',
+  keywords: 'sanctions tracker, economic sanctions, arms embargo, financial sanctions, sanctions database, OFAC',
+}
 
 type SanctionRecord = {
   id: string;

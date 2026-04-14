@@ -9,8 +9,29 @@ import Link from "next/link";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sanctions Watch — Global Sanctions Tracker 2026",
-  description: "Complete tracker for international sanctions. Search by country, issuer (OFAC, EU, UK, UN), and sector.",
+  title: {
+    default: 'Sanctions Watch | Real-Time Intelligence',
+    template: '%s | Sanctions Watch'
+  },
+  description: 'Comprehensive database of international sanctions, arms embargoes, and economic restrictions related to armed conflicts',
+  keywords: 'sanctions tracker, economic sanctions, arms embargo, financial sanctions, sanctions database, OFAC',
+  openGraph: {
+    type: 'website',
+    siteName: 'Sanctions Watch',
+    title: 'Sanctions Watch | Real-Time Intelligence',
+    description: 'Comprehensive database of international sanctions, arms embargoes, and economic restrictions related to armed conflicts',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sanctions Watch',
+    description: 'Comprehensive database of international sanctions, arms embargoes, and economic restrictions related to armed conflicts',
+  },
+  verification: {
+    google: 'add-your-google-site-verification-here',
+  },
+  other: {
+    'google-adsense-account': 'ca-pub-add-your-publisher-id-here',
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -37,13 +58,21 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </header>
         <main className="flex-1">{children}</main>
         <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 mt-auto">
-          <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-white font-semibold">Sanctions Watch</span>
-              <span className="text-slate-600">·</span>
-              <span className="text-xs">Data from OFAC, European Council, UK FCDO, and UN Security Council</span>
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm border-t border-slate-700 pt-6 mb-4 mt-4">
+              <a href="/about" className="hover:text-white transition-colors">About Us</a>
+              <a href="/faq" className="hover:text-white transition-colors">How to Use &amp; FAQ</a>
+              <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
             </div>
-            <VisitorCounter />
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-white font-semibold">Sanctions Watch</span>
+                <span className="text-slate-600">·</span>
+                <span className="text-xs">Data from OFAC, European Council, UK FCDO, and UN Security Council</span>
+              </div>
+              <VisitorCounter />
+            </div>
           </div>
         </footer>
         <AdMobileSticky />
